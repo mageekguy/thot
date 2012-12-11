@@ -1,14 +1,14 @@
 <?php
 
-namespace time\tests\units\calendar;
+namespace thot\tests\units\calendar;
 
 require __DIR__ . '/../../runner.php';
 
 use
 	atoum,
-	time\time,
-	time\interval,
-	time\calendar\generator as testedClass
+	thot\time,
+	thot\interval,
+	thot\calendar\generator as testedClass
 ;
 
 class generator extends atoum\test
@@ -107,7 +107,7 @@ class generator extends atoum\test
 					)
 				)
 				->exception(function() use ($generator, & $day) { $generator->addOpening($day = rand(7, PHP_INT_MAX), new interval()); })
-					->isInstanceOf('time\exceptions\invalidArgument')
+					->isInstanceOf('thot\exceptions\invalidArgument')
 					->hasMessage('Day \'' . $day . '\' is invalid')
 		;
 	}

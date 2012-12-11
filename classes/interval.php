@@ -1,9 +1,9 @@
 <?php
 
-namespace time;
+namespace thot;
 
 use
-	time\exceptions
+	thot\exceptions
 ;
 
 class interval

@@ -1,9 +1,9 @@
 <?php
 
-namespace time\exceptions;
+namespace thot\exceptions;
 
 use
-	time
+	thot
 ;
 
-class invalidArgument extends \invalidArgumentException implements time\exception {}
+class invalidArgument extends \invalidArgumentException implements thot\exception {}

@@ -1,6 +1,6 @@
 <?php
 
-namespace time\tests\units\exceptions;
+namespace thot\tests\units\exceptions;
 
 require __DIR__ . '/../../runner.php';
 
@@ -13,7 +13,7 @@ class invalidArgument extends atoum\test
 	public function testClass()
 	{
 		$this->testedClass
-			->implements('time\exception')
+			->implements('thot\exception')
 			->extends('invalidArgumentException')
 		;
 	}

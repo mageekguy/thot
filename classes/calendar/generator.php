@@ -1,10 +1,10 @@
 <?php
 
-namespace time\calendar;
+namespace thot\calendar;
 
 use
-	time\interval,
-	time\exceptions
+	thot\interval,
+	thot\exceptions
 ;
 
 class generator

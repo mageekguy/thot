@@ -1,13 +1,13 @@
 <?php
 
-namespace time\tests\units;
+namespace thot\tests\units;
 
 require __DIR__ . '/../runner.php';
 
 use
 	atoum,
-	time\time,
-	time\interval as testedClass
+	thot\time,
+	thot\interval as testedClass
 ;
 
 class interval extends atoum\test
@@ -24,7 +24,7 @@ class interval extends atoum\test
 				->object($interval->getStart())->isIdenticalTo($start)
 				->object($interval->getStop())->isIdenticalTo($stop)
 			->exception(function() { new testedClass(new time(23, 59), new time()); })
-				->isInstanceOf('time\exceptions\invalidArgument')
+				->isInstanceOf('thot\exceptions\invalidArgument')
 				->hasMessage('Start must be less than stop')
 		;
 	}
@@ -39,7 +39,7 @@ class interval extends atoum\test
 			->if($interval = new testedClass(null, new time(12)))
 			->then
 				->exception(function() use ($interval) { $interval->setStart(new time(12, 1)); })
-					->isInstanceOf('time\exceptions\invalidArgument')
+					->isInstanceOf('thot\exceptions\invalidArgument')
 					->hasMessage('Start must be less than stop')
 		;
 	}
@@ -54,7 +54,7 @@ class interval extends atoum\test
 			->if($interval = new testedClass(new time(12)))
 			->then
 				->exception(function() use ($interval) { $interval->setStop(new time(11, 59)); })
-					->isInstanceOf('time\exceptions\invalidArgument')
+					->isInstanceOf('thot\exceptions\invalidArgument')
 					->hasMessage('Stop must be greater than start')
 		;
 	}

@@ -1,14 +1,14 @@
 <?php
 
-namespace time\tests\units;
+namespace thot\tests\units;
 
 require __DIR__ . '/../runner.php';
 
 use
 	atoum,
-	time\time,
-	time\interval,
-	time\calendar as testedClass
+	thot\time,
+	thot\interval,
+	thot\calendar as testedClass
 ;
 
 class calendar extends atoum\test
@@ -26,7 +26,7 @@ class calendar extends atoum\test
 				->object($calendar->getStart())->isIdenticalTo($start)
 				->object($calendar->getStop())->isIdenticalTo($stop)
 			->exception(function() { new testedClass(new \dateTime('2012-12-07'), new \dateTime('2012-12-01')); })
-				->isInstanceOf('time\exceptions\invalidArgument')
+				->isInstanceOf('thot\exceptions\invalidArgument')
 				->hasMessage('Start must be less than stop')
 		;
 	}

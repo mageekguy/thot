@@ -1,5 +1,5 @@
 <?php
 
-namespace time;
+namespace thot;
 
 interface exception {}

@@ -1,6 +1,6 @@
 <?php
 
-namespace time;
+namespace thot;
 
 require __DIR__ . '/atoum/scripts/runner.php';
 

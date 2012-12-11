@@ -1,10 +1,10 @@
 <?php
 
-namespace time;
+namespace thot;
 
 use
-	time\time,
-	time\exceptions
+	thot\time,
+	thot\exceptions
 ;
 
 class time

@@ -1,12 +1,12 @@
 <?php
 
-namespace time\tests\units;
+namespace thot\tests\units;
 
 require __DIR__ . '/../runner.php';
 
 use
 	atoum,
-	time\time as testedClass
+	thot\time as testedClass
 ;
 
 class time extends atoum\test
@@ -23,10 +23,10 @@ class time extends atoum\test
 				->integer($time->getHour())->isEqualTo($hour)
 				->integer($time->getMinute())->isEqualTo($minute)
 			->exception(function() { new testedClass(24); })
-				->isInstanceOf('time\exceptions\invalidArgument')
+				->isInstanceOf('thot\exceptions\invalidArgument')
 				->hasMessage('Hour must be between 0 and 23')
 			->exception(function() { new testedClass(rand(1, 23), 60); })
-				->isInstanceOf('time\exceptions\invalidArgument')
+				->isInstanceOf('thot\exceptions\invalidArgument')
 				->hasMessage('Minute must be between 0 and 59')
 		;
 	}
@@ -39,7 +39,7 @@ class time extends atoum\test
 				->object($time->setHour($hour = rand(1, 23)))->isIdenticalTo($time)
 				->integer($time->getHour())->isEqualTo($hour)
 			->exception(function() use ($time) { $time->setHour(24); })
-				->isInstanceOf('time\exceptions\invalidArgument')
+				->isInstanceOf('thot\exceptions\invalidArgument')
 				->hasMessage('Hour must be between 0 and 23')
 		;
 	}
@@ -52,7 +52,7 @@ class time extends atoum\test
 				->object($time->setMinute($minute = rand(1, 59)))->isIdenticalTo($time)
 				->integer($time->getMinute())->isEqualTo($minute)
 			->exception(function() use ($time) { $time->setMinute(60); })
-				->isInstanceOf('time\exceptions\invalidArgument')
+				->isInstanceOf('thot\exceptions\invalidArgument')
 				->hasMessage('Minute must be between 0 and 59')
 		;
 	}
