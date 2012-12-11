@@ -117,9 +117,37 @@ class generator extends atoum\test
 		$this
 			->if($generator = new testedClass())
 			->then
-				->object($generator->addClosing($date = new \dateTime(), $interval1 = new interval()))->isIdenticalTo($generator)
+				->object($generator->addClosing($date1 = new \dateTime('2012-12-01 17:45:32'), $interval1 = new interval()))->isIdenticalTo($generator)
 				->array($generator->getClosing())->isEqualTo(array(
-						$date->modify('midnight')->format('U') => array($interval1)
+						$date1->modify('midnight')->format('U') => array($interval1)
+					)
+				)
+				->object($generator->addClosing($date1, $otherInterval1 = new interval()))->isIdenticalTo($generator)
+				->array($generator->getClosing())->isEqualTo(array(
+						$date1->modify('midnight')->format('U') => array($interval1)
+					)
+				)
+			->if($generator = new testedClass())
+			->then
+				->object($generator->addClosing($date1, $interval1 = new interval(new time(8), new time(12))))->isIdenticalTo($generator)
+				->array($generator->getClosing())->isEqualTo(array(
+						$date1->modify('midnight')->format('U') => array($interval1)
+					)
+				)
+				->object($generator->addClosing($date1, $otherInterval1 = new interval(new time(14), new time(18))))->isIdenticalTo($generator)
+				->array($generator->getClosing())->isEqualTo(array(
+						$date1->modify('midnight')->format('U') => array($interval1, $otherInterval1)
+					)
+				)
+				->object($generator->addClosing($date1, new interval(new time(10), new time(16))))->isIdenticalTo($generator)
+				->array($generator->getClosing())->isEqualTo(array(
+						$date1->modify('midnight')->format('U') => array(new interval(new time(8), new time(18)))
+					)
+				)
+				->object($generator->addClosing($date2 = new \dateTime('2012-12-02 10:01:23'), $interval1 = new interval(new time(10), new time(16))))->isIdenticalTo($generator)
+				->array($generator->getClosing())->isEqualTo(array(
+						$date1->modify('midnight')->format('U') => array(new interval(new time(8), new time(18))),
+						$date2->modify('midnight')->format('U') => array($interval1)
 					)
 				)
 		;
