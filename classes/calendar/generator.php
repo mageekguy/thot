@@ -3,9 +3,8 @@
 namespace thot\calendar;
 
 use
-	thot\interval,
 	thot\calendar,
-	thot\exceptions
+	thot\calendar\generator\event
 ;
 
 class generator
@@ -13,28 +12,11 @@ class generator
 	protected $opening = array();
 	protected $closing = array();
 
-	public function addOpening($day, interval $interval)
+	public function addOpening(event $event)
 	{
-		switch ($day)
-		{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-				if (isset($this->opening[$day]) === false)
-				{
-					$this->opening[$day] = array();
-				}
+		$this->opening[] = $event;
 
-				$this->opening[$day] = $interval->mergeIn($this->opening[$day]);
-				return $this;
-
-			default:
-				throw new exceptions\invalidArgument('Day \'' . $day . '\' is invalid');
-		}
+		return $this;
 	}
 
 	public function getOpening()
@@ -42,16 +24,9 @@ class generator
 		return $this->opening;
 	}
 
-	public function addClosing(\dateTime $dateTime, interval $interval)
+	public function addClosing(event $event)
 	{
-		$key = static::getKeyFromDateTime($dateTime);
-
-		if (isset($this->closing[$key]) === false)
-		{
-			$this->closing[$key] = array();
-		}
-
-		$this->closing[$key] = $interval->mergeIn($this->closing[$key]);
+		$this->closing[] = $event;
 
 		return $this;
 	}
