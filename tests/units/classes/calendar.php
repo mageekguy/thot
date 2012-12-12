@@ -162,4 +162,32 @@ class calendar extends atoum
 				->array($calendar->getIntervalsSince(new \dateTime('2012-12-08')))->isEmpty()
 		;
 	}
+
+	public function testIsAvailable()
+	{
+		$this
+			->if($calendar = new testedClass($start = new \dateTime('2012-12-01'), $stop = new \dateTime('2012-12-07')))
+			->then
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-01 -1 day')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-01')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-02')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-03')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-04')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-05')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-06')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-07')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-07 +1 day')))->isFalse()
+			->if($calendar->addInterval(new \dateTime('2012-12-02'), new interval()))
+			->then
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-01 -1 day')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-01')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-02')))->isTrue()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-03')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-04')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-05')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-06')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-07')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-07 +1 day')))->isFalse()
+		;
+	}
 }

@@ -127,6 +127,24 @@ class calendar implements \iterator
 		return $this;
 	}
 
+	public function isAvailable(\dateTime $dateTime)
+	{
+		$key = static::getKeyFromDateTime($dateTime);
+
+		if (isset($this->intervals[$key]) === true)
+		{
+			foreach ($this->intervals[$key] as $interval)
+			{
+				if ($interval->containsDateTime($dateTime) === true)
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	protected static function getKeyFromDateTime(\dateTime $dateTime)
 	{
 		$dateTime = clone $dateTime;
