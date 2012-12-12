@@ -42,7 +42,7 @@ class calendar extends atoum
 			->if($calendar->next())
 			->then
 				->object($calendar->rewind())->isIdenticalTo($calendar)
-				->integer($calendar->key())->isEqualTo(1)
+				->integer($calendar->key())->isZero()
 				->object($calendar->current())->isEqualTo($start)
 		;
 	}

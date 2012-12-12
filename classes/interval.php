@@ -90,6 +90,7 @@ class interval
 	{
 		switch (true)
 		{
+			/*
 			case $this->start == $interval->start && $this->stop->isGreaterThan($interval->stop):
 				return array(new static($interval->stop->addMinutes(1), clone $this->stop));
 
@@ -99,9 +100,41 @@ class interval
 					new static($interval->stop->addMinutes(1), clone $this->stop)
 				);
 
-			case $this->start->isLessThan($interval->start) && $this->stop == $interval->stop:
+			case $this->start->isLessThan($interval->start) && $this->stop->isLessThanOrEqualTo($interval->stop):
 				return array(
 					new static(clone $this->start, $interval->start->substractMinutes(1)),
+				);
+
+			case $this->start->isGreaterThan($interval->start) && $this->stop->isGreaterThan($interval->stop):
+				return array(
+					new static($interval->stop->addMinutes(1), clone $this->stop),
+				);
+			*/
+
+			case $this->start->isGreaterThan($interval->start) && $this->start->isLessThan($interval->stop) && $this->stop->isGreaterThan($interval->stop):
+				return array(
+					new static(clone $interval->stop->addMinutes(1), clone $this->stop)
+				);
+
+			case $interval->start->isGreaterThan($this->start) && $interval->start->isLessThan($this->stop) && $interval->stop->isGreaterThan($this->stop):
+				return array(
+					new static(clone $this->start, $interval->start->substractMinutes(1))
+				);
+
+			case $this->start->isLessThan($interval->start) && $this->stop->isGreaterThan($interval->stop):
+				return array(
+					new static(clone $this->start, $interval->start->substractMinutes(1)),
+					new static($interval->stop->addMinutes(1), clone $this->stop)
+				);
+
+			case $this->start == $interval->start && $this->stop->isGreaterThan($interval->stop):
+				return array(
+					new static($interval->stop->addMinutes(1), clone $this->stop)
+				);
+
+			case $this->start->isLessThan($interval->start) && $this->stop == $interval->stop:
+				return array(
+					new static(clone $this->start, $interval->start->substractMinutes(1))
 				);
 
 			default:
@@ -131,7 +164,7 @@ class interval
 		}
 	}
 
-	public function mergeIn(array $intervals)
+	public function addTo(array $intervals)
 	{
 		$that = $this;
 
@@ -151,6 +184,27 @@ class interval
 		$intervals = array_values($intervals);
 
 		return $intervals;
+	}
+
+	public function substractFrom(array $intervals)
+	{
+		$newIntervals = array();
+
+		foreach ($intervals as $key => $interval)
+		{
+			if ($interval->intersect($this) === null)
+			{
+				$newIntervals[] = $interval;
+			}
+			else foreach ($interval->substract($this) as $substractedInterval)
+			{
+				$newIntervals[] = $substractedInterval;
+			}
+		}
+
+		usort($newIntervals, function($a, $b) { return ($a->getStop()->isLessThanOrEqualTo($b->getStart()) ? -1 : ($a->getStart()->isGreaterThanOrEqualTo($b->getStop()) ? 1 : 0)); });
+
+		return array_values($newIntervals);
 	}
 
 	public function containsDateTime(\dateTime $dateTime)

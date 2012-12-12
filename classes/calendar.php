@@ -39,6 +39,7 @@ class calendar implements \iterator
 
 	public function rewind()
 	{
+		$this->key = 0;
 		$this->current = clone $this->start;
 
 		return $this;
@@ -122,7 +123,7 @@ class calendar implements \iterator
 			$this->intervals[$key] = array();
 		}
 
-		$this->intervals[$key] = $interval->mergeIn($this->intervals[$key]);
+		$this->intervals[$key] = $interval->addTo($this->intervals[$key]);
 
 		return $this;
 	}

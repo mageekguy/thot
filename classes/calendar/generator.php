@@ -38,13 +38,38 @@ class generator
 
 	public function generate(\dateTime $start, \dateTime $stop)
 	{
-		return new calendar($start, $stop);
-	}
+		$calendar = new calendar($start, $stop);
 
-	protected static function getKeyFromDateTime(\dateTime $dateTime)
-	{
-		$dateTime = clone $dateTime;
+		foreach ($calendar as $date)
+		{
+			$openings = array();
 
-		return $dateTime->modify('midnight')->format('U');
+			foreach ($this->opening as $event)
+			{
+				$interval = $event($date);
+
+				if ($interval !== null)
+				{
+					$openings = $interval->addTo($openings);
+				}
+			}
+
+			foreach ($this->closing as $event)
+			{
+				$interval = $event($date);
+
+				if ($interval !== null)
+				{
+					$openings = $interval->substractFrom($openings);
+				}
+			}
+
+			foreach ($openings as $interval)
+			{
+				$calendar->addInterval($date, $interval);
+			}
+		}
+
+		return $calendar->rewind();
 	}
 }
