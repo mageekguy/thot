@@ -11,7 +11,7 @@ use
 	thot\calendar as testedClass
 ;
 
-class calendar extends atoum\test
+class calendar extends atoum
 {
 	public function testClass()
 	{

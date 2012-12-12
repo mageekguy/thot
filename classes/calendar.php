@@ -67,7 +67,7 @@ class calendar implements \iterator
 
 	public function current()
 	{
-		return ($this->valid() === false ? null : clone $this->current);
+		return ($this->valid() === false ? null : clone $this->current->modify('midnight'));
 	}
 
 	public function getIntervals(\dateTime $dateTime)
