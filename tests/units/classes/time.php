@@ -9,7 +9,7 @@ use
 	thot\time as testedClass
 ;
 
-class time extends atoum\test
+class time extends atoum
 {
 	public function test__construct()
 	{

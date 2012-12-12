@@ -4,6 +4,7 @@ namespace thot\calendar;
 
 use
 	thot\interval,
+	thot\calendar,
 	thot\exceptions
 ;
 
@@ -58,6 +59,11 @@ class generator
 	public function getClosing()
 	{
 		return $this->closing;
+	}
+
+	public function generate(\dateTime $start, \dateTime $stop)
+	{
+		return new calendar($start, $stop);
 	}
 
 	protected static function getKeyFromDateTime(\dateTime $dateTime)

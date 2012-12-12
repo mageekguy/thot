@@ -8,10 +8,11 @@ use
 	atoum,
 	thot\time,
 	thot\interval,
+	thot\calendar,
 	thot\calendar\generator as testedClass
 ;
 
-class generator extends atoum\test
+class generator extends atoum
 {
 	public function test__construct()
 	{
@@ -150,6 +151,15 @@ class generator extends atoum\test
 						$date2->modify('midnight')->format('U') => array($interval1)
 					)
 				)
+		;
+	}
+
+	public function testGenerate()
+	{
+		$this
+			->if($generator = new testedClass())
+			->then
+				->object($generator->generate($start = new \dateTime('2012-12-01'), $stop = new \dateTime('2012-12-07')))//->isEqualTo(new calendar($start, $stop))
 		;
 	}
 }

@@ -8,7 +8,7 @@ use
 	atoum
 ;
 
-class invalidArgument extends atoum\test
+class invalidArgument extends atoum
 {
 	public function testClass()
 	{

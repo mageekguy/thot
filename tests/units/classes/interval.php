@@ -10,7 +10,7 @@ use
 	thot\interval as testedClass
 ;
 
-class interval extends atoum\test
+class interval extends atoum
 {
 	public function test__construct()
 	{
