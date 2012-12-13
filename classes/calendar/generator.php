@@ -3,6 +3,7 @@
 namespace thot\calendar;
 
 use
+	thot\time,
 	thot\calendar,
 	thot\calendar\generator\event
 ;
@@ -36,40 +37,103 @@ class generator
 		return $this->closing;
 	}
 
-	public function generate(\dateTime $start, \dateTime $stop)
+	public function generate(\dateTime $start, \dateTime $stop, \dateTime $dateTime = null)
 	{
 		$calendar = new calendar($start, $stop);
 
+		if ($dateTime === null)
+		{
+			$dateTime = $start;
+		}
+
 		foreach ($calendar as $date)
 		{
-			$openings = array();
-
-			foreach ($this->opening as $event)
+			if ($date >= $dateTime)
 			{
-				$interval = $event($date);
-
-				if ($interval !== null)
+				foreach ($this->computeCalendarIntervals($date) as $interval)
 				{
-					$openings = $interval->addTo($openings);
+					if ($interval->containsDateTime($dateTime) === true)
+					{
+						$interval->setStart(time::getFromDateTime($dateTime));
+					}
+
+					$calendar->addInterval($date, $interval);
 				}
-			}
-
-			foreach ($this->closing as $event)
-			{
-				$interval = $event($date);
-
-				if ($interval !== null)
-				{
-					$openings = $interval->substractFrom($openings);
-				}
-			}
-
-			foreach ($openings as $interval)
-			{
-				$calendar->addInterval($date, $interval);
 			}
 		}
 
 		return $calendar->rewind();
+	}
+
+	public function getNextIntervalsFromDateTime(\dateTime $dateTime, \dateTime $stop)
+	{
+		$dateTime = clone $dateTime;
+
+		$intervals = array();
+
+		$dateIntervals = $this->computeCalendarIntervals($dateTime);
+
+		while (sizeof($dateIntervals) <= 0 && $dateTime <= $stop)
+		{
+			$dateTime->modify('tomorrow');
+			$dateIntervals = $this->computeCalendarIntervals($dateTime);
+		}
+
+		if (sizeof($dateIntervals) > 0)
+		{
+			$start = time::getFromDateTime($dateTime);
+
+			foreach ($dateIntervals as $interval)
+			{
+				switch (true)
+				{
+					case $interval->isBeforeDateTime($dateTime):
+						break;
+
+					case $interval->containsDateTime($dateTime):
+						$dateTimeStart = time::getFromDateTime($dateTime);
+
+						if ($dateTimeStart->isGreaterThan($interval->getStart()) === true && $dateTimeStart->isLessThan($interval->getStop()) === true)
+						{
+							$interval->setStart($dateTimeStart);
+							$intervals[] = $interval;
+						}
+
+						break;
+
+					default:
+						$intervals[] = $interval;
+				}
+			}
+		}
+
+		return $intervals;
+	}
+
+	protected function computeCalendarIntervals(\dateTime $dateTime)
+	{
+		$intervals = array();
+
+		foreach ($this->opening as $event)
+		{
+			$interval = $event($dateTime);
+
+			if ($interval !== null)
+			{
+				$intervals = $interval->addTo($intervals);
+			}
+		}
+
+		foreach ($this->closing as $event)
+		{
+			$interval = $event($dateTime);
+
+			if ($interval !== null)
+			{
+				$intervals = $interval->substractFrom($intervals);
+			}
+		}
+
+		return $intervals;
 	}
 }

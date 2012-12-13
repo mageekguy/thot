@@ -31,7 +31,7 @@ class event extends atoum
 			->and($event = new testedClass(function(\dateTime $dateTime) use ($date) { return $dateTime == $date; }, $interval = new interval()))
 			->then
 				->variable($event(new \dateTime('-1 day')))->isNull()
-				->object($event($date))->isIdenticalTo($interval)
+				->object($event($date))->isCloneOf($interval)
 		;
 	}
 }

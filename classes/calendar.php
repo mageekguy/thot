@@ -114,6 +114,19 @@ class calendar implements \iterator
 		return $intervals;
 	}
 
+	public function getIntervalAtDateTime(\dateTime $dateTime)
+	{
+		foreach ($this->getIntervals($dateTime) as $interval)
+		{
+			if ($interval->containsDateTime($dateTime) === true)
+			{
+				return $interval;
+			}
+		}
+
+		return null;
+	}
+
 	public function addInterval(\dateTime $dateTime, interval $interval)
 	{
 		$key = static::getKeyFromDateTime($dateTime);

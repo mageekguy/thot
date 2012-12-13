@@ -207,6 +207,11 @@ class interval
 		return array_values($newIntervals);
 	}
 
+	public function isBeforeDateTime(\dateTime $dateTime)
+	{
+		return ($this->stop->isLessThan(time::getFromDateTime($dateTime)) === true);
+	}
+
 	public function containsDateTime(\dateTime $dateTime)
 	{
 		$time = time::getFromDateTime($dateTime);

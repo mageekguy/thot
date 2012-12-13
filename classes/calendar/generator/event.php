@@ -21,6 +21,6 @@ class event extends thot\interval
 
 	public function __invoke(\dateTime $dateTime)
 	{
-		return ($this->trigger->__invoke($dateTime) === false ? null : $this->interval);
+		return ($this->trigger->__invoke($dateTime) === false ? null : clone $this->interval);
 	}
 }

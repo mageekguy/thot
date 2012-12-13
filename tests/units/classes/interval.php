@@ -189,11 +189,18 @@ class interval extends atoum
 			->if($interval = new testedClass())
 			->then
 				->boolean($interval->containsDateTime(new \dateTime()))->isTrue()
-			->if($interval = new testedClass(new time(), new time(12)))
-			->then
 				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 00:00')))->isTrue()
 				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 12:00')))->isTrue()
+				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 12:01')))->isTrue()
+				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 23:59')))->isTrue()
+			->if($interval = new testedClass(new time(8), new time(12)))
+			->then
+				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 00:00')))->isFalse()
+				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 07:59')))->isFalse()
+				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 08:00')))->isTrue()
+				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 12:00')))->isTrue()
 				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 12:01')))->isFalse()
+				->boolean($interval->containsDateTime(new \dateTime('1976-10-06 23:59')))->isFalse()
 		;
 	}
 
@@ -210,6 +217,21 @@ class interval extends atoum
 				->integer($interval->getMinutesToStop(new \dateTime('1976-10-06 00:00')))->isEqualTo(720)
 				->integer($interval->getMinutesToStop(new \dateTime('1976-10-06 12:00')))->isZero()
 				->variable($interval->getMinutesToStop(new \dateTime('1976-10-06 23:59')))->isNull()
+		;
+	}
+
+	public function testIsBeforeDateTime()
+	{
+		$this
+			->if($interval = new testedClass())
+			->then
+				->boolean($interval->isBeforeDateTime(new \dateTime()))->isFalse()
+			->if($interval = new testedClass(new time(10), new time(14)))
+			->then
+				->boolean($interval->isBeforeDateTime(new \dateTime('2012-12-01 09:59:00')))->isFalse()
+				->boolean($interval->isBeforeDateTime(new \dateTime('2012-12-01 10:00:00')))->isFalse()
+				->boolean($interval->isBeforeDateTime(new \dateTime('2012-12-01 14:00:00')))->isFalse()
+				->boolean($interval->isBeforeDateTime(new \dateTime('2012-12-01 14:01:00')))->isTrue()
 		;
 	}
 }

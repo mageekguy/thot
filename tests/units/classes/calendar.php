@@ -163,6 +163,30 @@ class calendar extends atoum
 		;
 	}
 
+	public function testGetIntervalAtDateTime()
+	{
+		$this
+			->if($calendar = new testedClass(new \dateTime('2012-12-01'), new \dateTime('2012-12-07')))
+			->then
+				->variable($calendar->getIntervalAtDateTime(new \dateTime()))->isNull()
+			->if($calendar->addInterval(new \dateTime('2012-12-03'), $interval = new interval()))
+			->then
+				->variable($calendar->getIntervalAtDateTime(new \dateTime('2012-12-01')))->isNull()
+				->object($calendar->getIntervalAtDateTime(new \dateTime('2012-12-03 00:00:00')))->isEqualTo($interval)
+				->object($calendar->getIntervalAtDateTime(new \dateTime('2012-12-03 23:59:00')))->isEqualTo($interval)
+			->if($calendar->addInterval(new \dateTime('2012-12-05'), $otherInterval = new interval(new time(8), new time(18))))
+			->then
+				->variable($calendar->getIntervalAtDateTime(new \dateTime('2012-12-01')))->isNull()
+				->object($calendar->getIntervalAtDateTime(new \dateTime('2012-12-03 00:00:00')))->isEqualTo($interval)
+				->object($calendar->getIntervalAtDateTime(new \dateTime('2012-12-03 23:59:00')))->isEqualTo($interval)
+				->variable($calendar->getIntervalAtDateTime(new \dateTime('2012-12-05 00:00:00')))->isNull()
+				->variable($calendar->getIntervalAtDateTime(new \dateTime('2012-12-05 07:59:00')))->isNull()
+				->object($calendar->getIntervalAtDateTime(new \dateTime('2012-12-05 08:00:00')))->isEqualTo($otherInterval)
+				->object($calendar->getIntervalAtDateTime(new \dateTime('2012-12-05 18:00:00')))->isEqualTo($otherInterval)
+				->variable($calendar->getIntervalAtDateTime(new \dateTime('2012-12-05 18:01:00')))->isNull()
+		;
+	}
+
 	public function testIsAvailable()
 	{
 		$this
