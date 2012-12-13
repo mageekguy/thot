@@ -234,4 +234,15 @@ class interval extends atoum
 				->boolean($interval->isBeforeDateTime(new \dateTime('2012-12-01 14:01:00')))->isTrue()
 		;
 	}
+
+	public function testGetDuration()
+	{
+		$this
+			->if($interval = new testedClass())
+			->then
+				->integer($interval->getDuration(new \dateTime('2013-03-30 00:00:00')))->isEqualTo(1439)
+				->integer($interval->getDuration(new \dateTime('2013-03-31 00:00:00')))->isEqualTo(1439)
+				->integer($interval->getDuration(new \dateTime('2013-04-01 00:00:00')))->isEqualTo(1439)
+		;
+	}
 }

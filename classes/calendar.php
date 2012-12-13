@@ -22,7 +22,7 @@ class calendar implements \iterator
 		}
 
 		$this->start = $start;
-		$this->stop= $stop;
+		$this->stop = $stop->modify('tomorrow -1 minutes');
 
 		$this->rewind();
 	}

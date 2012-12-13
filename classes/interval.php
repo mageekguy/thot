@@ -232,4 +232,9 @@ class interval
 
 		return $minutes;
 	}
+
+	public function getDuration(\dateTime $dateTime)
+	{
+		return $this->stop->toMinutes() - $this->start->toMinutes();
+	}
 }
