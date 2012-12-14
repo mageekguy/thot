@@ -141,6 +141,16 @@ class calendar implements \iterator
 		return $this;
 	}
 
+	public function addIntervals(\dateTime $dateTime, array $intervals)
+	{
+		foreach ($intervals as $interval)
+		{
+			$this->addInterval($dateTime, $interval);
+		}
+
+		return $this;
+	}
+
 	public function isAvailable(\dateTime $dateTime)
 	{
 		$key = static::getKeyFromDateTime($dateTime);

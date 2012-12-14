@@ -184,6 +184,66 @@ class time extends atoum
 		;
 	}
 
+	public function testRound()
+	{
+		$this
+			->if($time = new testedClass())
+			->then
+				->object($time->round())
+					->isCloneOf($time)
+				->object($time->round(10))
+					->isCloneOf($time)
+			->if($time = new testedClass(0, rand(1, 29)))
+			->then
+				->object($time->round())
+					->isEqualTo(new testedClass(0, 30))
+			->if($time = new testedClass(0, rand(1, 9)))
+			->then
+				->object($time->round(10))
+					->isEqualTo(new testedClass(0, 10))
+			->if($time = new testedClass(0, 10))
+			->then
+				->object($time->round(10))
+					->isEqualTo(new testedClass(0, 10))
+			->if($time = new testedClass(0, 30))
+			->then
+				->object($time->round())
+					->isEqualTo(new testedClass(0, 30))
+			->if($time = new testedClass(0, 45))
+			->then
+				->object($time->round())
+					->isEqualTo(new testedClass(1, 0))
+			->if($time = new testedClass(0, 45))
+			->then
+				->object($time->round(1))
+					->isEqualTo(new testedClass(0, 45))
+			->if($time = new testedClass(0, 45))
+			->then
+				->object($time->round(10))
+					->isEqualTo(new testedClass(0, 50))
+			->if($time = new testedClass(0, 45))
+			->then
+				->object($time->round(5))
+					->isEqualTo(new testedClass(0, 45))
+			->if($time = new testedClass(0, 45))
+			->then
+				->object($time->round(- 30))
+					->isEqualTo(new testedClass(0, 30))
+			->if($time = new testedClass(8, 46))
+			->then
+				->object($time->round(- 30))
+					->isEqualTo(new testedClass(8, 30))
+			->if($time = new testedClass(8, 6))
+			->then
+				->object($time->round(- 30))
+					->isEqualTo(new testedClass(8))
+			->if($time = new testedClass(8, 6))
+			->then
+				->object($time->round(- 10))
+					->isEqualTo(new testedClass(8))
+			;
+	}
+
 	public function testSubstractMinutes()
 	{
 		$this

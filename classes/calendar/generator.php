@@ -101,7 +101,7 @@ class generator
 
 		if ($delay <= 0 && $calendar->moveTo($dateTime) === true)
 		{
-			foreach ($this->computeCalendarIntervals($date = $calendar->current()) as $interval)
+			foreach ($this->getDateTimeIntervals($date = $calendar->current()) as $interval)
 			{
 				if ($interval->isBeforeDateTime($dateTime) === false)
 				{
@@ -116,10 +116,7 @@ class generator
 
 			while ($calendar->next()->valid() === true)
 			{
-				foreach ($this->computeCalendarIntervals($date = $calendar->current()) as $interval)
-				{
-					$calendar->addInterval($date, $interval);
-				}
+				$calendar->addIntervals($calendar->current(), $this->getDateTimeIntervals($calendar->current()));
 			}
 		}
 
@@ -130,12 +127,12 @@ class generator
 	{
 		$intervals = array();
 
-		$dateIntervals = $this->computeCalendarIntervals($dateTime);
+		$dateIntervals = $this->getDateTimeIntervals($dateTime);
 
 		while (sizeof($dateIntervals) <= 0 && $dateTime <= $stop)
 		{
 			$dateTime->modify('tomorrow');
-			$dateIntervals = $this->computeCalendarIntervals($dateTime);
+			$dateIntervals = $this->getDateTimeIntervals($dateTime);
 		}
 
 		if (sizeof($dateIntervals) > 0)
@@ -172,7 +169,7 @@ class generator
 		return $intervals;
 	}
 
-	protected function computeCalendarIntervals(\dateTime $dateTime)
+	protected function getDateTimeIntervals(\dateTime $dateTime)
 	{
 		$intervals = array();
 

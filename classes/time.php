@@ -111,6 +111,23 @@ class time
 		return $this->minutes - $time->minutes;
 	}
 
+	public function round($divisor = 30)
+	{
+		$roundTime = clone $this;
+
+		if ($roundTime->minutes % $divisor !== 0)
+		{
+			if ($divisor > 0)
+			{
+				$roundTime->minutes += $divisor;
+			}
+
+			$roundTime->minutes -= $roundTime->minutes % $divisor;
+		}
+
+		return $roundTime;
+	}
+
 	public function setInDateTime(\dateTime $dateTime)
 	{
 		return $dateTime->modify('midnight')->modify('+' . $this->minutes . ' minutes');

@@ -113,6 +113,21 @@ class calendar extends atoum
 		;
 	}
 
+	public function testAddIntervals()
+	{
+		$this
+			->if($calendar = new testedClass(new \dateTime('2012-12-01'), new \dateTime('2012-12-07')))
+			->then
+				->object($calendar->addIntervals($date1 = new \dateTime('2012-12-01'), array(
+							$interval1 = new interval(new time(8), new time(12)),
+							$otherInterval1 = new interval(new time(14), new time(18))
+						)
+					)
+				)->isIdenticalTo($calendar)
+				->array($calendar->getIntervals($date1))->isEqualTo(array($interval1, $otherInterval1))
+		;
+	}
+
 	public function testGetIntervals()
 	{
 		$this
