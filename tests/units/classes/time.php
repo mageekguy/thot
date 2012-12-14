@@ -223,4 +223,18 @@ class time extends atoum
 			->object(testedClass::getFromDateTime($date = new \DateTime()))->isEqualTo(new testedClass($date->format('G'), $date->format('i')))
 		;
 	}
+
+	public function testSetInDateTime()
+	{
+		$this
+			->if($time = new testedClass())
+			->then
+				->object($time->setInDateTime($dateTime = new \dateTime()))->isIdenticalTo($dateTime)
+				->string($dateTime->format('H:i'))->isEqualTo('00:00')
+			->if($time = new testedClass(8, 56))
+			->then
+				->object($time->setInDateTime($dateTime = new \dateTime()))->isIdenticalTo($dateTime)
+				->string($dateTime->format('H:i'))->isEqualTo('08:56')
+		;
+	}
 }

@@ -111,6 +111,11 @@ class time
 		return $this->minutes - $time->minutes;
 	}
 
+	public function setInDateTime(\dateTime $dateTime)
+	{
+		return $dateTime->modify('midnight')->modify('+' . $this->minutes . ' minutes');
+	}
+
 	public static function getFromDateTime(\dateTime $dateTime)
 	{
 		return new static($dateTime->format('G'), $dateTime->format('i'));

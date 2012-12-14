@@ -23,9 +23,9 @@ class interval
 			$stop = new time(23, 59);
 		}
 
-		if ($stop->toMinutes() <= $start->toMinutes())
+		if ($stop->toMinutes() < $start->toMinutes())
 		{
-			throw new exceptions\invalidArgument('Start must be less than stop');
+			throw new exceptions\invalidArgument('Start must be less than or equal to stop');
 		}
 
 		$this->start = $start;
@@ -34,9 +34,9 @@ class interval
 
 	public function setStart(time $start)
 	{
-		if ($this->stop->toMinutes() <= $start->toMinutes())
+		if ($this->stop->toMinutes() < $start->toMinutes())
 		{
-			throw new exceptions\invalidArgument('Start must be less than stop');
+			throw new exceptions\invalidArgument('Start must be less than or equal to stop');
 		}
 
 		$this->start = $start;
@@ -113,7 +113,7 @@ class interval
 
 			case $this->start->isGreaterThan($interval->start) && $this->start->isLessThan($interval->stop) && $this->stop->isGreaterThan($interval->stop):
 				return array(
-					new static(clone $interval->stop->addMinutes(1), clone $this->stop)
+					new static(clone $interval->stop, clone $this->stop)
 				);
 
 			case $interval->start->isGreaterThan($this->start) && $interval->start->isLessThan($this->stop) && $interval->stop->isGreaterThan($this->stop):
@@ -124,12 +124,12 @@ class interval
 			case $this->start->isLessThan($interval->start) && $this->stop->isGreaterThan($interval->stop):
 				return array(
 					new static(clone $this->start, $interval->start->substractMinutes(1)),
-					new static($interval->stop->addMinutes(1), clone $this->stop)
+					new static($interval->stop, clone $this->stop)
 				);
 
 			case $this->start == $interval->start && $this->stop->isGreaterThan($interval->stop):
 				return array(
-					new static($interval->stop->addMinutes(1), clone $this->stop)
+					new static($interval->stop, clone $this->stop)
 				);
 
 			case $this->start->isLessThan($interval->start) && $this->stop == $interval->stop:

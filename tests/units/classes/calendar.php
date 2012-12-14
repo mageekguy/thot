@@ -214,4 +214,33 @@ class calendar extends atoum
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-07 +1 day')))->isFalse()
 		;
 	}
+
+	public function testMoveToDate()
+	{
+		$this
+			->if($calendar = new testedClass(new \dateTime('2012-12-01'), new \dateTime('2012-12-07')))
+			->then
+				->boolean($calendar->moveTo($target = new \dateTime('2012-12-01')))->isTrue()
+				->object($calendar->current())->isEqualTo($target)
+				->boolean($calendar->valid())->isTrue()
+				->boolean($calendar->moveTo($target = new \dateTime('2012-12-02')))->isTrue()
+				->object($calendar->current())->isEqualTo($target)
+				->boolean($calendar->valid())->isTrue()
+				->boolean($calendar->moveTo($target = new \dateTime('2012-12-03')))->isTrue()
+				->object($calendar->current())->isEqualTo($target)
+				->boolean($calendar->valid())->isTrue()
+				->boolean($calendar->moveTo($target = new \dateTime('2012-12-05')))->isTrue()
+				->object($calendar->current())->isEqualTo($target)
+				->boolean($calendar->valid())->isTrue()
+				->boolean($calendar->moveTo($target = new \dateTime('2012-12-06')))->isTrue()
+				->object($calendar->current())->isEqualTo($target)
+				->boolean($calendar->valid())->isTrue()
+				->boolean($calendar->moveTo($target = new \dateTime('2012-12-07')))->isTrue()
+				->object($calendar->current())->isEqualTo($target)
+				->boolean($calendar->valid())->isTrue()
+				->boolean($calendar->moveTo(new \dateTime('2012-12-08')))->isFalse()
+				->object($calendar->current())->isEqualTo($target)
+				->boolean($calendar->valid())->isTrue()
+		;
+	}
 }

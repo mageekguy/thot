@@ -23,9 +23,13 @@ class interval extends atoum
 			->then
 				->object($interval->getStart())->isIdenticalTo($start)
 				->object($interval->getStop())->isIdenticalTo($stop)
+			->if($interval = new testedClass($start = new time(23, 59), $stop = new time(23, 59)))
+			->then
+				->object($interval->getStart())->isIdenticalTo($start)
+				->object($interval->getStop())->isIdenticalTo($stop)
 			->exception(function() { new testedClass(new time(23, 59), new time()); })
 				->isInstanceOf('thot\exceptions\invalidArgument')
-				->hasMessage('Start must be less than stop')
+				->hasMessage('Start must be less than or equal to stop')
 		;
 	}
 
@@ -36,11 +40,13 @@ class interval extends atoum
 			->then
 				->object($interval->setStart($start = new time(8)))->isIdenticalTo($interval)
 				->object($interval->getStart())->isIdenticalTo($start)
+				->object($interval->setStart($start = new time(0)))->isIdenticalTo($interval)
+				->object($interval->getStart())->isIdenticalTo($start)
 			->if($interval = new testedClass(null, new time(12)))
 			->then
 				->exception(function() use ($interval) { $interval->setStart(new time(12, 1)); })
 					->isInstanceOf('thot\exceptions\invalidArgument')
-					->hasMessage('Start must be less than stop')
+					->hasMessage('Start must be less than or equal to stop')
 		;
 	}
 
@@ -96,19 +102,19 @@ class interval extends atoum
 				->array($interval->substract($interval))->isEmpty()
 			->if($otherInterval = new testedClass(new time(), new time(12)))
 			->then
-				->array($interval->substract($otherInterval))->isEqualTo(array(new testedClass(new time(12, 1), new time(23, 59))))
+				->array($interval->substract($otherInterval))->isEqualTo(array(new testedClass(new time(12), new time(23, 59))))
 			->if($otherInterval = new testedClass(new time(12), new time(23, 59)))
 			->then
 				->array($interval->substract($otherInterval))->isEqualTo(array(new testedClass(new time(), new time(11, 59))))
 			->if($otherInterval = new testedClass(new time(8), new time(12)))
 			->then
-				->array($interval->substract($otherInterval))->isEqualTo(array(new testedClass(new time(0), new time(7, 59)), new testedClass(new time(12, 1), new time(23, 59))))
+				->array($interval->substract($otherInterval))->isEqualTo(array(new testedClass(new time(0), new time(7, 59)), new testedClass(new time(12), new time(23, 59))))
 			->if($interval = new testedClass(new time(8), new time(12)))
 			->then
 				->array($interval->substract(new testedClass(new time(10), new time(14))))->isEqualTo(array(new testedClass(new time(8), new time(9, 59))))
 			->if($interval = new testedClass(new time(10), new time(14)))
 			->then
-				->array($interval->substract(new testedClass(new time(8), new time(12))))->isEqualTo(array(new testedClass(new time(12, 1), new time(14))))
+				->array($interval->substract(new testedClass(new time(8), new time(12))))->isEqualTo(array(new testedClass(new time(12), new time(14))))
 		;
 	}
 
@@ -175,9 +181,9 @@ class interval extends atoum
 			->if($interval = new testedClass(new time(8), new time(12)))
 			->then
 				->array($interval->substractFrom(array()))->isEmpty()
-				->array($interval->substractFrom(array($otherInterval = new testedClass())))->isEqualTo(array(new testedClass(new time(), new time(7, 59)), new testedClass(new time(12, 1), new time(23, 59))))
+				->array($interval->substractFrom(array($otherInterval = new testedClass())))->isEqualTo(array(new testedClass(new time(), new time(7, 59)), new testedClass(new time(12), new time(23, 59))))
 				->array($interval->substractFrom(array($otherInterval = new testedClass(new time(14), new time(18)))))->isEqualTo(array($otherInterval))
-				->array($interval->substractFrom(array(new testedClass(new time(10), new time(14)))))->isEqualTo(array(new testedClass(new time(12, 1), new time(14))))
+				->array($interval->substractFrom(array(new testedClass(new time(10), new time(14)))))->isEqualTo(array(new testedClass(new time(12), new time(14))))
 				->array($interval->substractFrom(array($previousInterval = new testedClass(new time(1), new time(5)), $nextInterval = new testedClass(new time(14)))))->isEqualTo(array($previousInterval, $nextInterval))
 				->array($interval->substractFrom(array($nextInterval, $previousInterval)))->isEqualTo(array($previousInterval, $nextInterval))
 		;

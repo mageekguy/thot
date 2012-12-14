@@ -74,9 +74,7 @@ class generator
 
 			while ($delay > 0 && $now <= $stop)
 			{
-				$intervals = $this->getNextIntervalsFromDateTime($now, $stop);
-
-				foreach ($intervals as $interval)
+				foreach ($this->getNextIntervalsFromDateTime($now, $stop) as $interval)
 				{
 					$duration = $interval->getDuration($now);
 
@@ -86,13 +84,8 @@ class generator
 					}
 					else
 					{
-						$now
-							->modify('midnight')
-							->modify('+' . ($interval->getStart()->toMinutes() + $delay) . ' minutes')
-						;
-
+						$interval->getStart()->setInDateTime($now)->modify('+' . $delay . ' minutes');
 						$delay = 0;
-
 						break 2;
 					}
 				}
@@ -106,24 +99,26 @@ class generator
 			}
 		}
 
-		if ($delay <= 0 && $dateTime <= $stop)
+		if ($delay <= 0 && $calendar->moveTo($dateTime) === true)
 		{
-			$realStart = clone $dateTime;
-			$realStart->modify('midnight');
-
-			foreach ($calendar as $date)
+			foreach ($this->computeCalendarIntervals($date = $calendar->current()) as $interval)
 			{
-				if ($date >= $realStart)
+				if ($interval->isBeforeDateTime($dateTime) === false)
 				{
-					foreach ($this->computeCalendarIntervals($date) as $interval)
+					if ($interval->containsDateTime($dateTime) === true)
 					{
-						if ($date->format('Y-m-d') == $dateTime->format('Y-m-d') && $interval->containsDateTime($dateTime) === true)
-						{
-							$interval->setStart(time::getFromDateTime($dateTime));
-						}
-
-						$calendar->addInterval($date, $interval);
+						$interval->setStart(time::getFromDateTime($dateTime));
 					}
+
+					$calendar->addInterval($date, $interval);
+				}
+			}
+
+			while ($calendar->next()->valid() === true)
+			{
+				foreach ($this->computeCalendarIntervals($date = $calendar->current()) as $interval)
+				{
+					$calendar->addInterval($date, $interval);
 				}
 			}
 		}
@@ -133,8 +128,6 @@ class generator
 
 	public function getNextIntervalsFromDateTime(\dateTime $dateTime, \dateTime $stop)
 	{
-		$dateTime = clone $dateTime;
-
 		$intervals = array();
 
 		$dateIntervals = $this->computeCalendarIntervals($dateTime);
@@ -147,8 +140,6 @@ class generator
 
 		if (sizeof($dateIntervals) > 0)
 		{
-			$start = time::getFromDateTime($dateTime);
-
 			foreach ($dateIntervals as $interval)
 			{
 				switch (true)
@@ -159,15 +150,20 @@ class generator
 					case $interval->containsDateTime($dateTime):
 						$dateTimeStart = time::getFromDateTime($dateTime);
 
-						if ($dateTimeStart->isGreaterThan($interval->getStart()) === true && $dateTimeStart->isLessThan($interval->getStop()) === true)
+						if ($dateTimeStart->isGreaterThan($interval->getStart()) === true)
 						{
 							$interval->setStart($dateTimeStart);
-							$intervals[] = $interval;
 						}
 
+						$intervals[] = $interval;
 						break;
 
 					default:
+						if (sizeof($intervals) <= 0)
+						{
+							$dateTime->modify('midnight')->modify('+' . $interval->getStart()->toMinutes() . ' minutes');
+						}
+
 						$intervals[] = $interval;
 				}
 			}

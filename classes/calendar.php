@@ -159,6 +159,23 @@ class calendar implements \iterator
 		return false;
 	}
 
+	public function moveTo(\dateTime $dateTime)
+	{
+		$dateTime = clone $dateTime;
+
+		if ($dateTime->modify('midnight') >= $this->start && $dateTime <= $this->stop)
+		{
+			$this->rewind();
+
+			while ($this->valid() === true && $this->current() != $dateTime)
+			{
+				$this->next();
+			}
+		}
+
+		return ($this->current() == $dateTime);
+	}
+
 	protected static function getKeyFromDateTime(\dateTime $dateTime)
 	{
 		$dateTime = clone $dateTime;
