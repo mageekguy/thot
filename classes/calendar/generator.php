@@ -16,6 +16,14 @@ class generator
 	protected $closing = array();
 	protected $round = 0;
 
+	public function setDelay($delay, \dateTime $now)
+	{
+		$this->now = $now;
+		$this->delay = $delay;
+
+		return $this;
+	}
+
 	public function getNow()
 	{
 		return $this->now;
@@ -26,12 +34,16 @@ class generator
 		return $this->delay;
 	}
 
-	public function setDelay($delay, \dateTime $now)
+	public function setRound($round)
 	{
-		$this->now = $now;
-		$this->delay = $delay;
+		$this->round = $round;
 
 		return $this;
+	}
+
+	public function getRound()
+	{
+		return $this->round;
 	}
 
 	public function addOpening(event $event)
@@ -108,7 +120,7 @@ class generator
 				{
 					if ($interval->containsDateTime($dateTime) === true)
 					{
-						$interval->setStart(time::getFromDateTime($dateTime));
+						$interval->setStart(time::getFromDateTime($dateTime)->round($this->round));
 					}
 
 					$calendar->addInterval($date, $interval);

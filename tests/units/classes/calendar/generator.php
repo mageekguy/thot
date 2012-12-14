@@ -229,6 +229,25 @@ class generator extends atoum
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-05 08:00:00')))->isTrue()
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-06 08:00:00')))->isFalse()
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-07 08:00:00')))->isFalse()
+			->if($generator = new testedClass())
+			->and($generator->addOpening(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2012-12-02'); }, new interval(new time(8), new time(12)))))
+			->and($generator->setRound(30))
+			->then
+				->object($calendar = $generator->generate($start = new \dateTime('2012-12-01'), $stop = new \dateTime('2012-12-07'), new \dateTime('2012-12-02 10:42:05')))->isInstanceOf('thot\calendar')
+				->object($calendar->getStart())->isEqualTo($start)
+				->object($calendar->getStop())->isEqualTo($stop)
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-01 -1 day')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-01')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-02 00:00:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-02 10:42:05')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-02 11:00:00')))->isTrue()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-02 12:00:00')))->isTrue()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-02 12:01:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-03')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-04')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-05')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-06')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2012-12-07')))->isFalse()
 		;
 	}
 
