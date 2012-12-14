@@ -241,6 +241,10 @@ class time extends atoum
 			->then
 				->object($time->round(- 10))
 					->isEqualTo(new testedClass(8))
+			->if($time = new testedClass(8, 6))
+			->then
+				->object($time->round(0))
+					->isCloneOf($time)
 			;
 	}
 

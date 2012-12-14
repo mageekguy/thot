@@ -14,6 +14,7 @@ class generator
 	protected $delay = null;
 	protected $opening = array();
 	protected $closing = array();
+	protected $round = 0;
 
 	public function getNow()
 	{

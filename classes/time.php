@@ -115,7 +115,7 @@ class time
 	{
 		$roundTime = clone $this;
 
-		if ($roundTime->minutes % $divisor !== 0)
+		if ($divisor != 0 && $roundTime->minutes % $divisor !== 0)
 		{
 			if ($divisor > 0)
 			{
