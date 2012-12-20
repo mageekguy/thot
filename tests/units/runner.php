@@ -2,14 +2,7 @@
 
 namespace thot;
 
-require __DIR__ . '/atoum/scripts/runner.php';
+require_once __DIR__ . '/atoum/scripts/runner.php';
+require_once __DIR__ . '/../../classes/autoloader.php';
 
-use
-	atoum
-;
-
-$autoloader = new atoum\autoloader();
-$autoloader
-	->addDirectory(__NAMESPACE__, __DIR__ . '/../../classes')
-	->register()
-;
+\thot\autoloader::register();
