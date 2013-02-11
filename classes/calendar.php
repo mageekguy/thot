@@ -186,6 +186,25 @@ class calendar implements \iterator
 		return ($this->current() == $dateTime);
 	}
 
+	public function getFirstOpenDateTime()
+	{
+		foreach ($this as $dateTime)
+		{
+			$key = static::getKeyFromDateTime($dateTime);
+
+			if (isset($this->intervals[$key]) === true)
+			{
+				$start = $this->intervals[$key][0]->getStart();
+
+				$dateTime->setTime($start->getHour(), $start->getMinute());
+
+				return $dateTime;
+			}
+		}
+
+		return null;
+	}
+
 	protected static function getKeyFromDateTime(\dateTime $dateTime)
 	{
 		$dateTime = clone $dateTime;

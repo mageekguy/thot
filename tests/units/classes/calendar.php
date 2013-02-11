@@ -258,4 +258,41 @@ class calendar extends atoum
 				->boolean($calendar->valid())->isTrue()
 		;
 	}
+
+	public function testGetFirstOpenDateTime()
+	{
+		$this
+			->if($calendar = new testedClass($start = new \dateTime('2012-12-01'), $stop = new \dateTime('2012-12-07')))
+			->then
+				->variable($calendar->getFirstOpenDateTime())->isNull()
+			->if($calendar->addInterval(new \dateTime('2012-12-05'), new interval()))
+			->then
+				->object($calendar->getFirstOpenDateTime())->isEqualTo(new \dateTime('2012-12-05'))
+			->if($calendar->addInterval(new \dateTime('2012-12-02'), new interval(new time(14), new time(18))))
+			->then
+				->object($calendar->getFirstOpenDateTime())->isEqualTo(new \dateTime('2012-12-02 14:00:00'))
+				->object($calendar->current())->isEqualTo(new \dateTime('2012-12-02'))
+			->if($calendar->rewind())
+			->and($calendar->next())
+			->and($calendar->next())
+			->and($calendar->next())
+			->and($calendar->next())
+			->then
+				->object($calendar->getFirstOpenDateTime())->isEqualTo(new \dateTime('2012-12-02 14:00:00'))
+				->object($calendar->current())->isEqualTo(new \dateTime('2012-12-02'))
+			->if($calendar->rewind())
+			->and($calendar->next())
+			->and($calendar->next())
+			->and($calendar->next())
+			->and($calendar->next())
+			->and($calendar->next())
+			->and($calendar->next())
+			->and($calendar->next())
+			->then
+				->boolean($calendar->valid())->isFalse()
+				->object($calendar->getFirstOpenDateTime())->isEqualTo(new \dateTime('2012-12-02 14:00:00'))
+				->object($calendar->current())->isEqualTo(new \dateTime('2012-12-02'))
+				->boolean($calendar->valid())->isTrue()
+		;
+	}
 }
