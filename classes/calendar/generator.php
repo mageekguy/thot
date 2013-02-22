@@ -112,6 +112,9 @@ class generator
 			}
 		}
 
+		$time = time::getFromDateTime($dateTime)->round($this->round);
+		$time->setInDateTime($dateTime);
+
 		if ($delay <= 0 && $calendar->moveTo($dateTime) === true)
 		{
 			foreach ($this->getDateTimeIntervals($date = $calendar->current()) as $interval)
@@ -120,7 +123,7 @@ class generator
 				{
 					if ($interval->containsDateTime($dateTime) === true)
 					{
-						$interval->setStart(time::getFromDateTime($dateTime)->round($this->round));
+						$interval->setStart($time);
 					}
 
 					$calendar->addInterval($date, $interval);

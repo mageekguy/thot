@@ -248,6 +248,28 @@ class generator extends atoum
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-05')))->isFalse()
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-06')))->isFalse()
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-07')))->isFalse()
+			->if($generator = new testedClass())
+			->and($generator->addOpening(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2013-02-22'); }, new interval(new time(8), new time(12)))))
+			->and($generator->addOpening(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2013-02-22'); }, new interval(new time(14), new time(16)))))
+			->and($generator->addOpening(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2013-02-23'); }, new interval(new time(8), new time(12)))))
+			->and($generator->addOpening(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2013-02-23'); }, new interval(new time(14), new time(18)))))
+			->and($generator->addClosing(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2013-02-23'); }, new interval(new time(10), new time(16)))))
+			->and($generator->setDelay(120, $now = new \dateTime('2013-02-22 15:40:00')))
+			->and($generator->setRound(60))
+			->then
+				->object($calendar = $generator->generate($start = new \dateTime('2013-02-01'), $stop = new \dateTime('2013-02-28'), $now))->isInstanceOf('thot\calendar')
+				->object($calendar->getStart())->isEqualTo($start)
+				->object($calendar->getStop())->isEqualTo($stop)
+				->boolean($calendar->isAvailable($now))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 08:00:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 09:39:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 09:40:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 09:59:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 10:00:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 15:59:00')))->isFalse()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 16:00:00')))->isTrue()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 18:00:00')))->isTrue()
+				->boolean($calendar->isAvailable(new \dateTime('2013-02-23 18:01:00')))->isFalse()
 		;
 	}
 
