@@ -12,6 +12,7 @@ use
 class string extends asserters\variable
 {
 	protected $charlist = null;
+	protected $streamController = null;
 
 	public function __construct(asserter\generator $generator, atoum\adapter $adapter = null)
 	{

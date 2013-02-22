@@ -65,9 +65,12 @@ class autoloader
 
 	public function addDirectory($namespace, $directory)
 	{
+		$namespace = strtolower(trim($namespace, '\\') . '\\');
+		$directory = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
 		if (isset($this->directories[$namespace]) === false || in_array($directory, $this->directories[$namespace]) === false)
 		{
-			$this->directories[trim($namespace, '\\') . '\\'][] = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+			$this->directories[$namespace][] = $directory;
 
 			krsort($this->directories, \SORT_STRING);
 		}
@@ -106,13 +109,15 @@ class autoloader
 
 	public function getPath($class)
 	{
+		$caseInsentiveClass = strtolower($class);
+
 		foreach ($this->directories as $namespace => $directories)
 		{
-			if ($class !== $namespace)
+			if ($caseInsentiveClass !== $namespace)
 			{
 				$namespaceLength = strlen($namespace);
 
-				if (substr($class, 0, $namespaceLength) == $namespace)
+				if (substr($caseInsentiveClass, 0, $namespaceLength) == $namespace)
 				{
 					$classFile = str_replace('\\', DIRECTORY_SEPARATOR, substr($class, $namespaceLength)) . '.php';
 
