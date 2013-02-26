@@ -77,7 +77,6 @@ class generator extends atoum
 				->boolean($calendar->isAvailable(new \dateTime('2012-12-07 +1 day')))->isFalse()
 			->if($generator->addOpening(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2012-12-02'); }, new interval())))
 			->then
-				->dump($generator->getNextIntervalsFromDateTime(new \dateTime('2012-12-01'), new \dateTime('2012-12-07')))
 				->object($calendar = $generator->generate($start = new \dateTime('2012-12-01'), $stop = new \dateTime('2012-12-07')))->isInstanceOf('thot\calendar')
 				->object($calendar->getStart())->isEqualTo($start)
 				->object($calendar->getStop())->isEqualTo($stop)
@@ -294,4 +293,48 @@ class generator extends atoum
 				->array($generator->getNextIntervalsFromDateTime(new \dateTime('2012-12-03 00:00:00'), new \dateTime('2012-12-07')))->isEqualTo(array($otherInterval))
 		;
 	}
+
+    public function testHasClosing()
+    {
+        $this
+            ->if($generator = new testedClass())
+            ->then
+                ->object($generator->addClosing(new event(function(\dateTime $dateTime) { return ($dateTime->format('Y-m-d') == '2012-12-02'); }, new interval())))->isIdenticalTo($generator)
+                ->boolean($generator->hasClosing(new \dateTime('2012-12-02')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-12-02')))->isFalse()
+                ->boolean($generator->hasClosing(new \dateTime('2012-10-04')))->isFalse()
+        ;
+    }
+
+    public function testAddPublicHolidays()
+    {
+       $this
+            ->if($generator = new testedClass())
+            ->then
+                ->exception(function() use ($generator) { $generator->generate(new \DateTime('2014-01-01 00:00:00'), new \dateTime('2013-12-31 23:59:59')); })
+                ->isInstanceOf('invalidArgumentException')
+                ->hasMessage('Start must be less than stop')
+            ->if($generator->generate(new \DateTime('2013-01-01 00:00:00'), new \dateTime('2013-12-31 23:59:59')))
+            ->and($generator->addPublicHolidays(new \DateTime('2013-01-01 00:00:00'), new \dateTime('2013-12-31 23:59:59')))
+                ->exception(function() use ($generator) { $generator->addPublicHolidays(new \DateTime('2014-01-01 00:00:00'), new \dateTime('2013-12-31 23:59:59')); })
+                ->isInstanceOf('invalidArgumentException')
+                ->hasMessage('Start must be less than or equal to stop')
+            ->if($generator = new testedClass())
+            ->and($generator->generate(new \DateTime('2013-01-01 00:00:00'), new \dateTime('2013-12-31 23:59:59')))
+            ->and($generator->addPublicHolidays(new \DateTime('2013-01-01 00:00:00'), new \dateTime('2013-12-31 23:59:59')))
+            ->then
+                ->boolean($generator->hasClosing(new \dateTime('2013-01-01')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-05-01')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-05-08')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-07-14')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-08-15')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-11-01')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-11-11')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-12-25')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-03-31')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-04-01')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-05-09')))->isTrue()
+                ->boolean($generator->hasClosing(new \dateTime('2013-05-20')))->isTrue()
+       ;
+    }
 }

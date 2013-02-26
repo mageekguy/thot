@@ -251,4 +251,69 @@ class interval extends atoum
 				->integer($interval->getDuration(new \dateTime('2013-04-01 00:00:00')))->isEqualTo(1439)
 		;
 	}
+
+    public function testSegmentize()
+    {
+        $this
+            ->if($interval = new testedClass(new Time(9, 0),  new Time(12, 0)))
+            ->then
+            ->array($interval->segmentize())->isEqualTo(array(
+                new Time(9,0),
+                new Time(9,30),
+                new Time(10,0),
+                new Time(10,30),
+                new Time(11,0),
+                new Time(11,30),
+                new Time(12,0)
+            )
+        )
+            ->array($interval->segmentize(45))->isEqualTo(array(
+                new Time(9,0),
+                new Time(9,45),
+                new Time(10,30),
+                new Time(11,15),
+                new Time(12,0)
+            )
+        )
+            ->if($interval = new testedClass(new Time(9, 5),  new Time(12, 0)))
+            ->then
+            ->array($interval->segmentize())->isEqualTo(array(
+                new Time(9,30),
+                new Time(10,0),
+                new Time(10,30),
+                new Time(11,0),
+                new Time(11,30),
+                new Time(12,0)
+            )
+        )
+            ->array($interval->segmentize(45))->isEqualTo(array(
+                new Time(9, 45),
+                new Time(10, 30),
+                new Time(11, 15),
+                new Time(12,0)
+            )
+        )
+            ->if($interval = new testedClass(new Time(9, 31),  new Time(10, 0)))
+            ->then
+            ->array($interval->segmentize(3))->isEqualTo(array(
+                new Time(9, 33),
+                new Time(9, 36),
+                new Time(9, 39),
+                new Time(9, 42),
+                new Time(9, 45),
+                new Time(9, 48),
+                new Time(9, 51),
+                new Time(9, 54),
+                new Time(9, 57),
+                new Time(10)
+            )
+        )
+            ->exception(function() use ($interval) {
+                $interval->segmentize(0);
+            }
+        )
+            ->isInstanceOf('invalidArgumentException')
+            ->hasMessage('Divisor must be greater than 0')
+        ;
+    }
 }

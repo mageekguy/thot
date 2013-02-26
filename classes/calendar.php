@@ -182,14 +182,20 @@ class calendar implements \iterator
 				$this->next();
 			}
 		}
-
 		return ($this->current() == $dateTime);
 	}
 
-	public function getFirstOpenDateTime()
+	public function getFirstOpenDateTime(\dateTime $dateTimeStart = null)
 	{
+        if($dateTimeStart !== null)
+            $dateTimeStart->setTime(0, 0, 0);
+
 		foreach ($this as $dateTime)
 		{
+            if($dateTimeStart && $dateTimeStart > $dateTime ) {
+                continue;
+            }
+
 			$key = static::getKeyFromDateTime($dateTime);
 
 			if (isset($this->intervals[$key]) === true)
@@ -211,4 +217,40 @@ class calendar implements \iterator
 
 		return $dateTime->modify('midnight')->format('U');
 	}
+
+    public function segmentizeDate(\DateTime $dateTime = null, $divisor = 30)
+    {
+        $date = clone $dateTime;
+
+        $hours = array();
+
+        if ($date === null)
+        {
+            $date = new \DateTime();
+        }
+        $intervals = $this->getIntervals($date->setTime(0, 0, 0));
+
+        foreach($intervals as $interval) {
+
+            if ($interval !== null)
+            {
+                $hours[] = $interval->segmentize($divisor);
+            }
+        }
+        return $hours;
+    }
+
+    public function getClosedDays()
+    {
+        $closedDays = array();
+
+        foreach ($this as $dateTime)
+        {
+            if (null !== $dateTime && !count($this->getintervals($dateTime)))
+            {
+                $closedDays[] = $dateTime;
+            }
+        }
+        return $closedDays;
+    }
 }

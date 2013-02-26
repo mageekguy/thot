@@ -295,4 +295,78 @@ class calendar extends atoum
 				->boolean($calendar->valid())->isTrue()
 		;
 	}
+
+    public function testSegmentizeDate()
+    {
+        $this
+            ->if($calendar = new testedClass($start = new \DateTime('10/06/1976'), $stop = new \DateTime('10/07/1976')))
+            ->then
+                ->array($calendar->segmentizeDate($start))->isEmpty()
+                ->array($calendar->segmentizeDate($stop->modify('+15 day')))->isEmpty()
+                ->array($calendar->segmentizeDate($stop))->isEmpty()
+            ->if($calendar->addInterval($start, new Interval(new Time(9, 0), new Time(12, 0))))
+            ->if($calendar->addInterval($start, new Interval(new Time(14, 0), new Time(16, 0))))
+            ->then
+                ->array($calendar->segmentizeDate($start))->isEqualTo(array(
+                    array(
+                        new Time(9,0),
+                        new Time(9,30),
+                        new Time(10,0),
+                        new Time(10,30),
+                        new Time(11,0),
+                        new Time(11,30),
+                        new Time(12)
+                    ),
+                    array(
+                        new Time(14,0),
+                        new Time(14,30),
+                        new Time(15,0),
+                        new Time(15,30),
+                        new Time(16,0)
+                    )
+                )
+        )
+            ->array($calendar->segmentizeDate($stop->modify('+15 day')))->isEmpty()
+            ->array($calendar->segmentizeDate($stop))->isEmpty()
+            ->array($calendar->segmentizeDate($start->setTime(14, 11, 53)))->isEqualTo(array(
+                array(
+                    new Time(9,0),
+                    new Time(9,30),
+                    new Time(10,0),
+                    new Time(10,30),
+                    new Time(11,0),
+                    new Time(11,30),
+                    new Time(12)
+                ),
+                array(
+                    new Time(14,0),
+                    new Time(14,30),
+                    new Time(15,0),
+                    new Time(15,30),
+                    new Time(16,0)
+                )
+            )
+        )
+        ;
+    }
+
+    public function testGetClosedDays()
+    {
+        $this
+            ->if($calendar = new testedClass($start = new \DateTime('10/06/1976'), new \DateTime('10/08/1976')))
+                ->and($calendar->addInterval(new \DateTime('10/06/1976'), $interval = new Interval(new Time(10, 45), new Time(12))))
+                ->and($calendar->addInterval(new \DateTime('10/07/1976'), $interval = new Interval(new Time(8, 45), new Time(18))))
+                ->and($calendar->addInterval(new \DateTime('10/08/1976'), $interval = new Interval(new Time(15), new Time(18))))
+            ->then
+                ->array($calendar->getClosedDays())->isEqualTo(array())
+            ->if($calendar = new testedClass($start = new \DateTime('10/06/1976'), new \DateTime('10/08/1976')))
+                ->and($calendar->addInterval(new \DateTime('10/06/1976'), new Interval(new Time(10, 45), new Time(12))))
+            ->then
+                ->array($calendar->getClosedDays())->isEqualTo(array(
+                    new \DateTime('10/07/1976'),
+                    new \DateTime('10/08/1976')
+            )
+        )
+        ;
+    }
 }

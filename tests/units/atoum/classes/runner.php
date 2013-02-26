@@ -519,8 +519,15 @@ class runner implements observable
 
 			foreach (new \recursiveIteratorIterator($this->testDirectoryIterator->getIterator($directory)) as $path)
 			{
-				$paths[] = $path;
+				$paths[] = (string) $path;
+
 			}
+
+natsort($paths);
+
+foreach ($paths as $path){
+$this->addTest($path);
+}
 		}
 		catch (\UnexpectedValueException $exception)
 		{
