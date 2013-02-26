@@ -5,7 +5,9 @@ namespace thot\calendar;
 use
 	thot\time,
 	thot\calendar,
-	thot\calendar\generator\event
+	thot\calendar\generator\event,
+    thot\interval,
+    thot\exceptions
 ;
 
 class generator
@@ -201,6 +203,7 @@ class generator
 
 		foreach ($this->closing as $event)
 		{
+
 			$interval = $event($dateTime);
 
 			if ($interval !== null)
@@ -211,4 +214,104 @@ class generator
 
 		return $intervals;
 	}
+
+    public function hasClosing(\dateTime $dateTime)
+    {
+        if(!($closings = $this->getClosing()))
+            return false;
+        else {
+
+            foreach($closings as $event) {
+                //var_dump($event);
+                if($event($dateTime))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    public function addPublicHolidays($startDate, $stopDate)
+    {
+        if ($stopDate < $startDate)
+        {
+            throw new exceptions\invalidArgument('Start must be less than or equal to stop');
+        }
+
+        $closing = $this->getClosing();
+
+        $publicHolidaysDays = array();
+        $yearsRange = range($startDate->format('Y'), $stopDate->format('Y'));
+
+        foreach($yearsRange as $year)
+        {
+            //New year
+            $publicHolidaysDays[] = new \DateTime('01/01/' . $year);
+            //Fête du travail
+            $publicHolidaysDays[] = new \DateTime('05/01/' . $year);
+            //8 Mai 1945
+            $publicHolidaysDays[] = new \DateTime('05/08/' . $year);
+            //Fête nationale
+            $publicHolidaysDays[] = new \DateTime('07/14/' . $year);
+            //Assomption
+            $publicHolidaysDays[] = new \DateTime('08/15/' . $year);
+            //La toussaint
+            $publicHolidaysDays[] = new \DateTime('11/01/' . $year);
+            //Armistice
+            $publicHolidaysDays[] = new \DateTime('11/11/' . $year);
+            //Noël
+            $publicHolidaysDays[] = new \DateTime('12/25/' . $year);
+
+            //Pâques
+            $easterDay = new \DateTime(date('m/d/Y', $this->_getEasterDate(0, $year)));
+            $publicHolidaysDays[] = $easterDay;
+            //Lundi de Pâques
+            $lundiPaques = clone $easterDay;
+            $publicHolidaysDays[] = $lundiPaques->modify('+1 day');
+            //Ascension
+            $ascension = clone $easterDay;
+            $publicHolidaysDays[] = $ascension->modify('+39 day');
+            //Lundi de Pentecote
+            $pentecote = clone $easterDay;
+            $publicHolidaysDays[] = $pentecote->modify('+50 day');
+        }
+
+        $cpt = 0;
+
+        foreach($publicHolidaysDays as $date)
+        {   $cpt++;
+            if($startDate <= $date && $date <= $stopDate){
+                $this->addClosing(new event(function(\dateTime $dateTime) use($date) { return ($dateTime->format('Y-m-d') == $date->format('Y-m-d')); }, new interval(new time(0, 0))));
+            }
+        }
+    }
+
+    protected function _getEasterDate($jourj = 0, $annee = NULL)
+    {
+        $annee = ($annee == NULL) ? date("Y") : $annee;
+
+        $G   = $annee % 19;
+        $C   = floor($annee / 100);
+        $C_4 = floor($C / 4);
+        $E   = floor((8 * $C + 13) / 25);
+        $H   = (19 * $G + $C - $C_4 - $E + 15) % 30;
+
+        if($H == 29) {
+            $H = 28;
+        } elseif($H == 28 && $G > 10) {
+            $H = 27;
+        }
+
+        $K  = floor($H / 28);
+        $P  = floor(29 / ($H + 1));
+        $Q  = floor((21 - $G) / 11);
+        $I  = ($K * $P * $Q - 1) * $K + $H;
+        $B  = floor($annee / 4) + $annee;
+        $J1 = $B + $I + 2 + $C_4 - $C;
+        $J2 = $J1 % 7; //jour de pâques (0=dimanche, 1=lundi....)
+        $R  = 28 + $I - $J2; // résultat final :)
+        $mois = $R > 30 ? 4 : 3; // mois (1 = janvier, ... 3 = mars...)
+        $Jour = $mois == 3 ? $R : $R - 31;
+
+        return mktime(0, 0, 0, $mois, $Jour + $jourj, $annee);
+    }
 }

@@ -34,9 +34,9 @@ class interval
 
 	public function setStart(time $start)
 	{
-		if ($this->stop->toMinutes() < $start->toMinutes())
+    	if ($this->stop->toMinutes() < $start->toMinutes())
 		{
-			throw new exceptions\invalidArgument('Start must be less than or equal to stop');
+			throw new exceptions\invalidArgument('Start must be less than or equal to stop'/* ('.$this->stop->toMinutes().' < '.$start->toMinutes().')'*/);
 		}
 
 		$this->start = $start;
@@ -216,6 +216,7 @@ class interval
 	{
 		$time = time::getFromDateTime($dateTime);
 
+
 		return $this->start->isLessThanOrEqualTo($time) && $this->stop->isGreaterThanOrEqualTo($time);
 	}
 
@@ -237,4 +238,24 @@ class interval
 	{
 		return $this->stop->toMinutes() - $this->start->toMinutes();
 	}
+
+    public function segmentize($divisor = 30)
+    {
+        if ($divisor <= 0)
+        {
+            throw new \InvalidArgumentException('Divisor must be greater than 0');
+        }
+
+        $hours = array();
+
+        $start = $this->start->round($divisor);
+
+        while ($start->isLessThanOrEqualTo($this->stop))
+        {
+            $hours[] = $start;
+            $start = $start->addMinutes($divisor)->round($divisor);
+        }
+
+        return $hours;
+    }
 }

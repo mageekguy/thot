@@ -137,4 +137,22 @@ class time
 	{
 		return new static($dateTime->format('G'), $dateTime->format('i'));
 	}
+
+    public function __toString()
+    {
+        return sprintf('%02d:%02d', floor($this->minutes / 60), $this->minutes % 60);
+    }
+
+    public function format($format = '%02d:%02d')
+    {
+        switch(trim($format)) {
+            case '%02d:%02d';
+                return $this->__toString();
+            case '%2dh';
+                return sprintf($format, floor($this->minutes / 60));
+            case '%2dh%02d':
+            case '%dh%02d';
+                return sprintf($format, floor($this->minutes / 60), $this->minutes % 60);
+        }
+    }
 }
